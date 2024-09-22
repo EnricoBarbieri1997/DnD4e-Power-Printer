@@ -13,7 +13,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - target: x86_64-pc-windows-gnu
           - target: x86_64-unknown-linux-musl
+          - target: x86_64-apple-darwin
     steps:
       - uses: actions/checkout@master
       - name: Compile
@@ -30,8 +32,8 @@ jobs:
           mkdir -p dist/user/printables/
           cp -r data/ dist/
           zip -9r archive.zip dist/
-          path="$(pwd)/archive.zip"
-          echo "BUILT_ARCHIVE=archive.zip" >> "$GITHUB_OUTPUT"
+          path="$(pwd)/dist/"
+          echo "BUILT_ARCHIVE=$path" >> "$GITHUB_OUTPUT"
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
