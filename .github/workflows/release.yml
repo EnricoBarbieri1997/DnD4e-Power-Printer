@@ -9,6 +9,8 @@ on:
 
 jobs:
   release:
+    permissions:
+      contents: write
     name: release ${{ matrix.target }}
     runs-on: ubuntu-latest
     strategy:
@@ -25,7 +27,7 @@ jobs:
         run: echo "VERSION=$(cat Cargo.toml | grep version | head -n1 | cut -d' ' -f3 | sed 's/\"//g')" >> "$GITHUB_OUTPUT"
       - name: Compile
         id: compile
-        uses: rust-build/rust-build.action@v1.4.4
+        uses: rust-build/rust-build.action@v1.4.3
         with:
           RUSTTARGET: ${{ matrix.target }}
           UPLOAD_MODE: none
