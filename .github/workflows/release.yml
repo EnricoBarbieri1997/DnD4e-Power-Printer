@@ -13,17 +13,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - target: x86_64-pc-windows-gnu
           - target: x86_64-unknown-linux-musl
-          - target: x86_64-apple-darwin
     steps:
       - uses: actions/checkout@master
       - name: Compile
+        id: compile
         uses: rust-build/rust-build.action@v1.4.5
         with:
           RUSTTARGET: ${{ matrix.target }}
           UPLOAD_MODE: none
       - name: Package
+        id: package
         run: |
           mkdir -p dist
           cp ${{ steps.compile.outputs.BUILT_ARCHIVE }} dist/
