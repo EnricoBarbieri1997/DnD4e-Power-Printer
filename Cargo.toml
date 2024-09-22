@@ -6,8 +6,4 @@ edition = "2021"
 [dependencies]
 kuchikiki = "0.8.2"
 quick-xml = "0.23.1"
-rusqlite = "0.26.1"
-
-[dependencies.rusqlite]
-version = "0.32.0"
-features = ["bundled"]
+rusqlite = { version = "0.32.0", features = ["bundled"] }
