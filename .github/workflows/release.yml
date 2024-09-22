@@ -18,9 +18,25 @@ jobs:
           - target: x86_64-apple-darwin
     steps:
       - uses: actions/checkout@master
+      - name: Extract version
+        id: extract_version
+        run: echo "VERSION=$(cat Cargo.toml | grep version | head -n1 | cut -d' ' -f3 | sed 's/\"//g')" >> "$GITHUB_OUTPUT"
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }} ${{ steps.extract_version.outputs.VERSION }}
+          body: |
+            Release ${{ steps.extract_version.outputs.VERSION }}
+            ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false
       - name: Compile
         id: compile
-        uses: rust-build/rust-build.action@v1.4.5
+        uses: rust-build/rust-build.action@v1.4.4
         with:
           RUSTTARGET: ${{ matrix.target }}
           UPLOAD_MODE: none
@@ -32,11 +48,14 @@ jobs:
           mkdir -p dist/user/printables/
           cp -r data/ dist/
           zip -9r archive.zip dist/
-          path="$(pwd)/dist/"
+          path="$(pwd)/archive.zip"
           echo "BUILT_ARCHIVE=$path" >> "$GITHUB_OUTPUT"
       - name: Upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: ${{ matrix.target }}
-          path: |
-            ${{ steps.package.outputs.BUILT_ARCHIVE }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_name: ${{ matrix.target }}
+          asset_path: ${{ steps.package.outputs.BUILT_ARCHIVE }}
+          asset_content_type: application/zip
