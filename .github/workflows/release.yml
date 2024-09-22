@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - release
+    tags:
+      - "v*.*.*"
 
 jobs:
   release:
@@ -21,19 +23,6 @@ jobs:
       - name: Extract version
         id: extract_version
         run: echo "VERSION=$(cat Cargo.toml | grep version | head -n1 | cut -d' ' -f3 | sed 's/\"//g')" >> "$GITHUB_OUTPUT"
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }} ${{ steps.extract_version.outputs.VERSION }}
-          body: |
-            Release ${{ steps.extract_version.outputs.VERSION }}
-            ${{ github.event.head_commit.message }}
-          draft: false
-          prerelease: false
       - name: Compile
         id: compile
         uses: rust-build/rust-build.action@v1.4.4
@@ -50,12 +39,14 @@ jobs:
           zip -9r archive.zip dist/
           path="$(pwd)/archive.zip"
           echo "BUILT_ARCHIVE=$path" >> "$GITHUB_OUTPUT"
-      - name: Upload
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: ${{ matrix.target }}
-          asset_path: ${{ steps.package.outputs.BUILT_ARCHIVE }}
-          asset_content_type: application/zip
+          files: ${{ steps.package.outputs.BUILT_ARCHIVE }}
+          tag_name: ${{ github.ref }}
+          name: Release ${{ github.ref }} ${{ steps.extract_version.outputs.VERSION }}
+          body: |
+            Release ${{ steps.extract_version.outputs.VERSION }}
+            ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false
