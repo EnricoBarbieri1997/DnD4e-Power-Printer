@@ -176,9 +176,9 @@ fn generate_html(output_path: &str, texts: &[String]) -> Result<(), Box<dyn std:
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let xml_dir = "./data/characters";
+    let xml_dir = "./user/characters";
     let db_path = "./data/powers.db";
-    let output_path = "./data/printables";
+    let output_path = "./user/printables";
     let entries = fs::read_dir(xml_dir)?;
     for entry in entries {
         let entry = entry?;
