@@ -45,8 +45,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ steps.package.outputs.BUILT_ARCHIVE }}
-          tag_name: ${{ github.ref }}
-          name: Release ${{ github.ref }} ${{ steps.extract_version.outputs.VERSION }}
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }} ${{ steps.extract_version.outputs.VERSION }}
           body: |
             Release ${{ steps.extract_version.outputs.VERSION }}
             ${{ github.event.head_commit.message }}
