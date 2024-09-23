@@ -19,7 +19,6 @@ jobs:
         include:
           - target: x86_64-pc-windows-gnu
           - target: x86_64-unknown-linux-musl
-          - target: x86_64-apple-darwin
     steps:
       - uses: actions/checkout@master
       - name: Extract version
@@ -34,12 +33,12 @@ jobs:
       - name: Package
         id: package
         run: |
-          unzip ${{ steps.compile.outputs.BUILT_ARCHIVE }} -d dist/
-          mkdir -p dist/user/characters/
-          mkdir -p dist/user/printables/
-          cp -r data/ dist/
-          zip -9r archive.zip dist/
-          path="$(pwd)/archive.zip"
+          unzip ${{ steps.compile.outputs.BUILT_ARCHIVE }} -d DnD4ePowerPrinter/
+          mkdir -p DnD4ePowerPrinter/user/characters/
+          mkdir -p DnD4ePowerPrinter/user/printables/
+          cp -r data/ DnD4ePowerPrinter/
+          zip -9r ${{ matrix.target }}.zip ./DnD4ePowerPrinter
+          path="$(pwd)/${{ matrix.target }}.zip"
           echo "BUILT_ARCHIVE=$path" >> "$GITHUB_OUTPUT"
       - name: Create Release
         uses: softprops/action-gh-release@v2
