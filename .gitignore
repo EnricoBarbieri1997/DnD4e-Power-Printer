@@ -26,5 +26,4 @@ Cargo.lock
 
 /**/.DS_STORE
 
-/data/characters
-/data/printables
+/user
